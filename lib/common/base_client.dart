@@ -6,38 +6,56 @@ class BaseClient{
   final String _baseUrl = "https://pdm-back.vercel.app";
   final LocalStorage _localStorage = LocalStorage();
 
-  Future<Object> get( String uri ) async {
+    Future<Map<String, dynamic>> get( String uri ) async {
+        var response =  await http.get(  
+            Uri.parse('$_baseUrl$uri'), 
+            headers: { 'authorization': await _localStorage.getString('token') }
+        ); 
+        if(response.body.contains("error")){
+            throw http.ClientException(jsonDecode(response.body)["error"]);
+        }
 
-    return http.get(  
-      Uri.https(_baseUrl, uri), 
-      headers: { 'authorization': await _localStorage.getObject('token') }
-    ); 
-  }
+        return jsonDecode(response.body);
+    }
   
-  Future<Object> post(String uri, String body) async {
-    var response = await http.post( 
-      Uri.parse(_baseUrl+uri), 
-      body: jsonEncode(<String, String>{
-        'password':'senha',
-        'email':'usuario@gmail.com',
-      }),
-      headers: { 'authorization':await _localStorage.getObject('token') } 
-    );
+    Future<Map<String, dynamic>> post(String uri, Map<String, dynamic> requestBody) async {
+        var response = await http.post(
+            Uri.parse('$_baseUrl$uri'), 
+            headers: { 'authorization':await _localStorage.getString('token') },
+            body: requestBody
+        );
 
-    if(response.statusCode != 200){
-      throw http.ClientException(jsonDecode(response.body)['error']);
+        if(response.body.contains("error")){
+            throw http.ClientException(jsonDecode(response.body)["error"]);
+        }
+        return jsonDecode(response.body);
     }
 
-    return jsonDecode(response.body);
-  }
+    Future<Map<String, dynamic>> patch(String uri, Map<String, dynamic> requestBody) async {
+        var response = await http.patch(
+            Uri.parse('$_baseUrl$uri'), 
+            headers: { 'authorization':await _localStorage.getString('token') },
+            body: requestBody
+        );
 
-  Future<Object> delete(String uri, Map body) async {
+        if(response.body.contains("error")){
+            throw http.ClientException(jsonDecode(response.body)["error"]);
+        }
 
-    return http.delete( 
-      Uri.https(_baseUrl, uri),
-      body: body,
-      headers: { 'authorization':await _localStorage.getObject('token') } 
-    ); 
-  }
+        return jsonDecode(response.body);
+    }
+
+    Future<Map<String, dynamic>> delete(String uri) async {
+      var response = await http.delete( 
+          Uri.parse('$_baseUrl$uri'), 
+          headers: { 'authorization':await _localStorage.getString('token') } 
+      ); 
+
+      if(response.body.contains("error")){
+          throw http.ClientException(jsonDecode(response.body)["error"]);
+      }
+
+      return jsonDecode(response.body);
+    }
 
 }

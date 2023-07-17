@@ -1,37 +1,52 @@
-// import 'package:trabalho1/common/base_client.dart';
-// import 'package:trabalho1/user/user_dto.dart';
+import 'package:flutter_application_1/common/base_client.dart';
+import 'package:flutter_application_1/screens/user/update/user_update_dto.dart';
+import 'package:flutter_application_1/user/user_dto.dart';
 
-// class UserClient {
-//   final String _userUri = '/user';
-//   final String _userLogin = '/user/login';
+class UserClient {
+    final String _userUri = '/user';
+    final String _userLogin = '/user/login';
+    final String _updateUserCredentials = '/user/credentials';
+    final String _updateUserPassword = '/user/password';
 
-//   final BaseClient _baseClient = BaseClient();
+    final BaseClient _baseClient = BaseClient();
 
-//   Future<Object> login(String email, String userPassword) async {
-//     return _baseClient.post(_userLogin, "");
-//   }
+    Future<Map<String, dynamic>> login(String email, String userPassword) async {
+        return _baseClient.post(
+            _userLogin, 
+            Map<String, dynamic>.from({ 'password': userPassword, 'email': email })
+        );
+    }
 
-//   Future<Object> getUser() {
-//     return _baseClient.get(_userUri);
-//   }
+    Future<Map<String, dynamic>> create(UserDTO userDTO) {
+        return _baseClient.post(
+            _userUri, 
+            Map<String, dynamic>.from({ 
+              'email': userDTO.email, 
+              "name":userDTO.username, 
+              'password': userDTO.password, 
+            })
+        );
+    }
 
-//   Future(Object) create(UserDTO userDTO){
-//     //todo
-//     return _baseClient.post(_userUri, body);
-//   }
+    Future<Map<String, dynamic>> changeCredentials(UserUpdateDTO userDTO){
+        return _baseClient.patch(
+            _updateUserCredentials, 
+            Map<String, dynamic>.from({ 
+                'email': userDTO.email, 
+                "name":userDTO.username, 
+                'password': userDTO.password, 
+            }) 
+        );
+    }
 
-//   Future(Object) changePassword(UserDTO userDTO){
-//     //todo
-//     return _baseClient.post(_userUri, "body");
-//   }
 
-//   Future(Object) changeUsername(UserDTO userDTO){
-//     //todo
-//     return _baseClient.post(_userUri, "body");
-//   }
-
-//   Future(Object) changeEmail(UserDTO userDTO){
-//     //todo
-//     return _baseClient.post(_userUri, "body");
-//   }
-// }
+    Future<Map<String, dynamic>> changePassword(UserUpdateDTO userDTO){
+        return _baseClient.patch(
+            _updateUserPassword, 
+            Map<String, dynamic>.from({ 
+                'password': userDTO.password, 
+                'new_password': userDTO.newPassword
+            }) 
+        );
+    }
+}
